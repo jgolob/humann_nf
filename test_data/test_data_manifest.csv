@@ -1,0 +1,5 @@
+specimen,R1,R2
+5140-AL-11,test_data/5140-AL-11_CGAATTGC-CACCTTAC_S21_R1_001__R1.noadapt.nohuman.reduced.fq.gz,test_data/5140-AL-11_CGAATTGC-CACCTTAC_S21_R2_001__R2.noadapt.nohuman.reduced.fq.gz
+5140-AL-13,test_data/5140-AL-13_TCGGATTC-TAGTTGCG_S23_R1_001__R1.noadapt.nohuman.reduced.fq.gz,test_data/5140-AL-13_TCGGATTC-TAGTTGCG_S23_R2_001__R2.noadapt.nohuman.reduced.fq.gz
+5140-AL-12,test_data/5140-AL-12_GGAAGAGA-TTCTCTCG_S22_R1_001__R1.noadapt.nohuman.reduced.fq.gz,test_data/5140-AL-12_GGAAGAGA-TTCTCTCG_S22_R2_001__R2.noadapt.nohuman.reduced.fq.gz
+5140-AL-10,test_data/5140-AL-10_GAACGAAG-GGTGATTC_S20_R1_001__R1.noadapt.nohuman.reduced.fq.gz,test_data/5140-AL-10_GAACGAAG-GGTGATTC_S20_R2_001__R2.noadapt.nohuman.reduced.fq.gz
