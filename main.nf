@@ -26,6 +26,7 @@ workflow Humann3 {
         se_ch
         chocophlan
         uniref
+        pathways
 
     main:
 
@@ -47,7 +48,8 @@ workflow Humann3 {
             Merge_pairs.out,
         ),
         chocophlan_refs,
-        file(uniref)
+        uniref,
+        pathways,
     )
 
 }
@@ -72,26 +74,6 @@ process Merge_pairs {
     """
 }
 
-process Run_Humann_Test {
-    container "${container__humann}"
-    label 'multithread'
-    errorStrategy 'finish'
-
-    beforeScript 'ulimit -Ss unlimited'
-
-    input:
-    tuple val(specimen), path(R1)
-    path(chocophlan), stageAs: 'refs/chocophlan/'
-    path('refs/uniref.dmnd')
-
-    output:
-    tuple val(specimen), path("${specimen}_result.tgz")
-    """
-    ls refs/chocophlan/
-    """
-}
-
-
 process Run_Humann {
     container "${container__humann}"
     label 'multithread'
@@ -103,13 +85,15 @@ process Run_Humann {
     tuple val(specimen), path(R1)
     path(chocophlan), stageAs: 'refs/chocophlan/'
     path(uniref), stageAs: 'refs/uniref/'
+    path(pathways), stageAs: 'refs/utility_mapping/'
 
     output:
     tuple val(specimen), path("${specimen}_result.tgz")
     """
     humann3 --input ${R1} \
-    --protein-database refs/uniref/uniref/ \
+    --protein-database refs/uniref/ \
     --nucleotide-database refs/chocophlan/ \
+    --pathways-database refs/utility_mapping/ \
     --output out/
     """
 }
@@ -130,6 +114,7 @@ def helpMessage() {
                     'R2'                        Second / reverse read, in fasta format and gzipped  (optional)
     --chocophlan    Path to chocophlan references directory (REQUIRED)
     --uniref        Path to uncompressed uniref diamond reference directory (REQUIRED)
+    --pathways      Path to pathways directory (REQUIRED)
     --output        Path where to place the output files
     
     Parameters:
@@ -148,7 +133,7 @@ def ReadManifest(manifest_file){
 }
 
 workflow {
-    if ((!params.chocophlan) | (!params.uniref) | (!params.manifest) | params.help) {
+    if ((!params.chocophlan) | (!params.uniref) | (!params.manifest) | (!params.pathways) | params.help) {
         helpMessage()
         exit 0
     }
@@ -164,7 +149,8 @@ workflow {
         manifest.valid_paired,
         manifest.valid_single,
         params.chocophlan,
-        params.uniref
+        params.uniref,
+        params.pathways,
     )
 
 }
