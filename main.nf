@@ -17,6 +17,8 @@ params.manifest = false
 params.help = false
 params.chocophlan = false
 params.uniref = false
+params.metaphlan = false
+params.metaphlan_index = 'mpa_vOct22_CHOCOPhlAnSGB_202212'
 
 params.output = './output'
 
@@ -26,15 +28,11 @@ workflow Humann3 {
         se_ch
         chocophlan
         uniref
-        pathways
+        metaphlan
+        metaphlan_index
 
     main:
 
-    chocophlan_refs = Channel.fromPath(
-        params.chocophlan+"/*.ffn.gz")
-        .map{ file(it) }
-        .toList()
-    
     // merge the PE reads
     Merge_pairs(
         paired_ch.map{
@@ -47,9 +45,10 @@ workflow Humann3 {
         se_ch.mix(
             Merge_pairs.out,
         ),
-        chocophlan_refs,
+        chocophlan,
         uniref,
-        pathways,
+        metaphlan,
+        metaphlan_index
     )
 
 }
@@ -78,6 +77,7 @@ process Run_Humann {
     container "${container__humann}"
     label 'multithread'
     errorStrategy 'finish'
+    publishDir "${params.output}", mode: 'copy'
 
     beforeScript 'ulimit -Ss unlimited'
 
@@ -85,15 +85,16 @@ process Run_Humann {
     tuple val(specimen), path(R1)
     path(chocophlan), stageAs: 'refs/chocophlan/'
     path(uniref), stageAs: 'refs/uniref/'
-    path(pathways), stageAs: 'refs/utility_mapping/'
+    path(metaphlan), stageAs: 'refs/metaphlan/'
+    val(metaphlan_index)
 
     output:
-    tuple val(specimen), path("${specimen}_result.tgz")
+    tuple val(specimen), path("out/${specimen}_genefamilies.tsv"), path("out/${specimen}_pathabundance.tsv"), path("out/${specimen}_pathcoverage.tsv")
     """
     humann3 --input ${R1} \
-    --protein-database refs/uniref/uniref/ \
-    --nucleotide-database refs/chocophlan/ \
-    --pathways-database refs/utility_mapping/utility_mapping/ \
+    --protein-database ${uniref} \
+    --nucleotide-database ${chocophlan} \
+    --metaphlan-options "-t rel_ab  --index ${metaphlan_index} --bowtie2db ${metaphlan} --offline" \
     --output out/
     """
 }
@@ -114,7 +115,8 @@ def helpMessage() {
                     'R2'                        Second / reverse read, in fasta format and gzipped  (optional)
     --chocophlan    Path to chocophlan references directory (REQUIRED)
     --uniref        Path to uncompressed uniref diamond reference directory (REQUIRED)
-    --pathways      Path to pathways directory (REQUIRED)
+    --metaphlan     Path to metaphlan reference directory (REQUIRED)
+    --metaphlan_index   Current index (default: mpa_vOct22_CHOCOPhlAnSGB_202212)
     --output        Path where to place the output files
     
     Parameters:
@@ -133,7 +135,7 @@ def ReadManifest(manifest_file){
 }
 
 workflow {
-    if ((!params.chocophlan) | (!params.uniref) | (!params.manifest) | (!params.pathways) | params.help) {
+    if ((!params.chocophlan) | (!params.uniref) | (!params.manifest) | (!params.metaphlan) | params.help) {
         helpMessage()
         exit 0
     }
@@ -150,7 +152,8 @@ workflow {
         manifest.valid_single,
         params.chocophlan,
         params.uniref,
-        params.pathways,
+        params.metaphlan,
+        params.metaphlan_index
     )
 
 }
