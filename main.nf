@@ -93,7 +93,6 @@ process Run_Humann {
     humann3 --input ${R1} \
     --protein-database refs/uniref/uniref/ \
     --nucleotide-database refs/chocophlan/ \
-    --pathways-database refs/utility_mapping/utility_mapping/ \
     --output out/
     """
 }
