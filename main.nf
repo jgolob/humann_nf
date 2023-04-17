@@ -9,7 +9,7 @@
 nextflow.enable.dsl=2
 
 // containers
-container__humann = 'quay.io/biocontainers/humann:3.6.0'
+container__humann = 'quay.io/biocontainers/humann:3.7--pyh7cba7a3_0'
 container__vsearch = 'quay.io/biocontainers/vsearch:2.17.0--h95f258a_1'
 
 // Default parameters
@@ -56,7 +56,7 @@ workflow Humann3 {
 process Merge_pairs {
     container "${container__vsearch}"
     label 'io_limited'
-    errorStrategy 'finish'
+    errorStrategy 'ignore'
 
     input:
     tuple val(specimen), path(R1), path(R2)
@@ -75,8 +75,8 @@ process Merge_pairs {
 
 process Run_Humann {
     container "${container__humann}"
-    label 'multithread'
-    errorStrategy 'finish'
+    label 'mid_memory'
+    errorStrategy 'ignore'
     publishDir "${params.output}", mode: 'copy'
 
     beforeScript 'ulimit -Ss unlimited'
@@ -95,6 +95,7 @@ process Run_Humann {
     --protein-database ${uniref} \
     --nucleotide-database ${chocophlan} \
     --metaphlan-options "-t rel_ab  --index ${metaphlan_index} --bowtie2db ${metaphlan} --offline" \
+    --threads ${task.cpus} \
     --output out/
     """
 }
