@@ -75,7 +75,7 @@ process Merge_pairs {
 
 process Run_MetaPhlAn4 {
     container "${container__metaphlan}"
-    label 'mid_memory'
+    label 'mem_veryhigh'
     errorStrategy 'ignore'
     publishDir "${params.output}", mode: 'copy'
 
