@@ -9,7 +9,7 @@
 nextflow.enable.dsl=2
 
 // containers
-container__metaphlan = 'golob/metaphlan:v4.06'
+container__metaphlan = 'golob/metaphlan:v4.06A'
 container__vsearch = 'quay.io/biocontainers/vsearch:2.17.0--h95f258a_1'
 
 // Default parameters
