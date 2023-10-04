@@ -9,7 +9,7 @@
 nextflow.enable.dsl=2
 
 // containers
-container__humann = 'quay.io/biocontainers/humann:3.7--pyh7cba7a3_0'
+container__humann = 'quay.io/biocontainers/humann:3.8--pyh7cba7a3_0'
 container__vsearch = 'quay.io/biocontainers/vsearch:2.17.0--h95f258a_1'
 
 // Default parameters
@@ -75,7 +75,7 @@ process Merge_pairs {
 
 process Run_Humann {
     container "${container__humann}"
-    label 'mid_memory'
+    label 'multithread'
     errorStrategy 'ignore'
     publishDir "${params.output}", mode: 'copy'
 
@@ -94,7 +94,7 @@ process Run_Humann {
     humann3 --input ${R1} \
     --protein-database ${uniref} \
     --nucleotide-database ${chocophlan} \
-    --metaphlan-options "-t rel_ab  --index ${metaphlan_index} --bowtie2db ${metaphlan} --offline" \
+    --metaphlan-options "-t rel_ab  --index ${metaphlan_index} --bowtie2db ${metaphlan} --offline --force" \
     --threads ${task.cpus} \
     --output out/
     """
