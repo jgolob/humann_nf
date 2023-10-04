@@ -89,7 +89,7 @@ process Run_Humann {
     val(metaphlan_index)
 
     output:
-    tuple val(specimen), path("out/${specimen}_genefamilies.tsv"), path("out/${specimen}_pathabundance.tsv"), path("out/${specimen}_pathcoverage.tsv")
+    tuple val(specimen), path("out/${specimen}_genefamilies.tsv"), path("out/${specimen}_pathabundance.tsv"), path("out/${specimen}_pathcoverage.tsv"), path("out/${specimen}_humann_temp/${specimen}_metaphlan_bugs_list.tsv"), path("out/${specimen}_humann_temp/${specimen}.log")
     """
     humann3 --input ${R1} \
     --protein-database ${uniref} \
